@@ -28,5 +28,4 @@ dist-ssr
 *.sln
 *.sw?
 
-# Private and runtime-uploaded documents
-public/uploads/
+# Documents and uploads are included for production deployment

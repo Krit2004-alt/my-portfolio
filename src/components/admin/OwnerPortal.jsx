@@ -62,23 +62,30 @@ export default function OwnerPortal() {
     e.preventDefault();
     setLoginError('');
     setIsLoggingIn(true);
-    const result = await login(username, password, rememberMe);
-    setIsLoggingIn(false);
-    if (!result.success) {
-      setLoginError(result.error || 'Invalid credentials.');
+    try {
+      const result = await login(username, password, rememberMe);
+      if (!result.success) {
+        setLoginError(result.error || 'Invalid credentials.');
+      }
+    } catch (err) {
+      setLoginError('Authentication encountered an issue. Please try again.');
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
   // Handle saving changes
   const handleSaveAll = async () => {
-    setSaveStatus({ state: 'saving', message: 'Saving changes to persistent disk storage...' });
+    setSaveStatus({ state: 'saving', message: 'Saving changes...' });
     const result = await savePortfolio(draft);
     if (result.success) {
       setSaveStatus({ 
         state: 'success', 
-        message: `Changes saved and published to disk successfully at ${new Date().toLocaleTimeString()}!` 
+        message: result.isLocal
+          ? `Changes saved to local browser storage at ${result.savedAt || new Date().toLocaleTimeString()}! Download JSON from Publish tab to commit permanently.`
+          : `Changes saved and published to disk successfully at ${new Date().toLocaleTimeString()}!` 
       });
-      setTimeout(() => setSaveStatus({ state: 'idle', message: '' }), 4000);
+      setTimeout(() => setSaveStatus({ state: 'idle', message: '' }), 5000);
     } else {
       setSaveStatus({ state: 'error', message: `Save error: ${result.error}` });
     }
@@ -94,7 +101,7 @@ export default function OwnerPortal() {
       return;
     }
 
-    setUploadStatus('Uploading resume to server disk (/public/uploads)...');
+    setUploadStatus('Processing resume document...');
     const result = await uploadFile(file, 'resume');
     if (result.success) {
       const updatedDraft = {
@@ -110,9 +117,11 @@ export default function OwnerPortal() {
       setDraft(updatedDraft);
       const saveRes = await savePortfolio(updatedDraft);
       if (saveRes.success) {
-        setUploadStatus(`Resume uploaded & saved to disk: ${result.fileName}`);
+        setUploadStatus(result.isClientFallback 
+          ? `Resume reference updated: ${result.fileName}` 
+          : `Resume uploaded & saved to disk: ${result.fileName}`);
       } else {
-        setUploadStatus(`Resume uploaded (${result.fileName}), but saving failed: ${saveRes.error}`);
+        setUploadStatus(`Resume updated (${result.fileName}), but saving failed: ${saveRes.error}`);
       }
     } else {
       setUploadStatus(`Upload failed: ${result.error}`);
@@ -129,7 +138,7 @@ export default function OwnerPortal() {
       return;
     }
 
-    setUploadStatus(`Uploading document for certificate...`);
+    setUploadStatus(`Processing certificate document...`);
     const result = await uploadFile(file, 'cert');
     if (result.success) {
       const updatedDraft = {
@@ -149,9 +158,11 @@ export default function OwnerPortal() {
       setDraft(updatedDraft);
       const saveRes = await savePortfolio(updatedDraft);
       if (saveRes.success) {
-        setUploadStatus(`Document attached & saved to disk: ${result.fileName}`);
+        setUploadStatus(result.isClientFallback 
+          ? `Document attached & updated: ${result.fileName}` 
+          : `Document attached & saved to disk: ${result.fileName}`);
       } else {
-        setUploadStatus(`Document uploaded (${result.fileName}), but saving failed: ${saveRes.error}`);
+        setUploadStatus(`Document attached (${result.fileName}), but saving failed: ${saveRes.error}`);
       }
     } else {
       setUploadStatus(`Upload failed: ${result.error}`);
@@ -285,8 +296,7 @@ export default function OwnerPortal() {
           <div className="security-notice-box">
             <ShieldCheck size={14} className="text-cyan" />
             <span>
-              Real Authentication: Secrets and passwords remain strictly server-side. 
-              No hidden buttons or client-only security.
+              Owner Access: Validated credentials unlock administration and profile management controls.
             </span>
           </div>
         </div>
