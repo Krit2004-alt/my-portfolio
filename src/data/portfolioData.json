@@ -1,0 +1,568 @@
+{
+  "personalInfo": {
+    "name": "Kritika Khandelwal",
+    "title": "Java Backend Developer & Systems Engineer",
+    "statusTag": "Java Backend Developer | CSE '27",
+    "headline": "Building Reliable Backend Systems. Solving Real Problems.",
+    "subhead": "Computer Science engineering student specializing in Java, Spring Boot, distributed microservices, Saga choreography, and high-concurrency systems. Focused on practical reliability, zero double-debiting architectures, and clear engineering trade-offs.",
+    "education": {
+      "degree": "B.Tech in Computer Science and Engineering",
+      "institution": "JECRC University, Jaipur",
+      "period": "2023 – 2027",
+      "status": "Undergraduate (3rd Year)"
+    },
+    "placement": {
+      "status": "Selected at Tata Consultancy Services (TCS)",
+      "role": "System Engineer",
+      "badge": "TCS System Engineer Select"
+    },
+    "gate": {
+      "title": "GATE CSE 2026 Qualified",
+      "details": "Qualified in Computer Science & Information Technology",
+      "badge": "GATE CSE '26 Qualified"
+    },
+    "contacts": {
+      "email": "kritika270404@gmail.com",
+      "github": "https://github.com/Krit2004-alt",
+      "linkedin": "https://www.linkedin.com/in/kritikakhandelwal04/",
+      "leetcode": "https://leetcode.com/u/kritika2704/",
+      "resumeUrl": "/uploads/doc_1792086173602_Kritika_Khandelwal_UResume.pdf"
+    }
+  },
+  "flagshipProject": {
+    "id": "arthsetu",
+    "name": "ArthSetu — Distributed Digital Banking Platform",
+    "badge": "Flagship Project",
+    "type": "Distributed Microservices Core",
+    "tagline": "A production-grade digital banking backend core built with Java 21, Spring Boot 3.3.5, and Apache Kafka. Implements Saga choreography, Redisson distributed locks, idempotency engines, and automated compensating transactions.",
+    "links": {
+      "github": "https://github.com/Krit2004-alt/arthsetu-digital-banking-platform",
+      "deployment": ""
+    },
+    "techStack": [
+      {
+        "name": "Java",
+        "version": "21",
+        "category": "Language"
+      },
+      {
+        "name": "Spring Boot",
+        "version": "3.3.5",
+        "category": "Framework"
+      },
+      {
+        "name": "Spring Cloud",
+        "version": "2023.0.3",
+        "category": "Microservices"
+      },
+      {
+        "name": "Apache Kafka",
+        "version": "3.7.1",
+        "category": "Messaging"
+      },
+      {
+        "name": "PostgreSQL",
+        "version": "15",
+        "category": "Database"
+      },
+      {
+        "name": "Redis & Redisson",
+        "version": "7 / 3.31",
+        "category": "Distributed Cache & Locks"
+      },
+      {
+        "name": "JWT RS256",
+        "version": "JJWT 0.12.5",
+        "category": "Security"
+      },
+      {
+        "name": "Flyway",
+        "version": "10.11",
+        "category": "DB Migration"
+      },
+      {
+        "name": "Gradle",
+        "version": "9.0",
+        "category": "Build Tool"
+      },
+      {
+        "name": "Docker Compose",
+        "version": "3.8",
+        "category": "Containerization"
+      },
+      {
+        "name": "Observability",
+        "version": "Prometheus + Grafana + Zipkin + Kafka UI",
+        "category": "Monitoring"
+      }
+    ],
+    "overview": {
+      "problem": "Traditional monolithic banking systems struggle with tight coupling, database-level lock contention during simultaneous transfers, and cascading failures across services. In fintech transfers, simple HTTP calls risk silent failure mid-flight, potentially causing catastrophic double-debiting or un-refunded funds when downstream credit endpoints fail.",
+      "approach": "Designed a multi-module distributed banking core using Hexagonal Architecture and Saga choreography across Apache Kafka. Instead of blocking 2-Phase Commit (2PC) or an orchestrator single-point-of-failure, each service manages its own isolated PostgreSQL database and communicates via durable Kafka events with automated compensating transactions (refunds).",
+      "outcome": "Built an end-to-end resilient banking system with zero double-debiting guarantees through Redisson distributed locking and REST idempotency keys, validated by 37 passing automated tests."
+    },
+    "verifiedTests": {
+      "totalPassedTests": 37,
+      "passRate": "100%",
+      "failures": 0,
+      "regressions": 0,
+      "suites": [
+        {
+          "name": "InitiateTransferUseCaseTest",
+          "module": "transaction-service",
+          "count": 6,
+          "result": "PASSED",
+          "coverage": "Idempotency hit/miss, parameter tampering detection, Redisson distributed locking, same-account rejection, lock release in finally"
+        },
+        {
+          "name": "TransferApplicationServiceTest",
+          "module": "transaction-service",
+          "count": 9,
+          "result": "PASSED",
+          "coverage": "Saga initiation, duplicate Kafka suppression on replay, Saga debit completion, automated compensating refund on credit failure, cancellation handling, transfer ownership queries"
+        },
+        {
+          "name": "TransferControllerTest",
+          "module": "transaction-service",
+          "count": 6,
+          "result": "PASSED",
+          "coverage": "HTTP 202 transfer initiation with userId header, HTTP 200 get-by-id, HTTP 404 not found, account transfer history, HTTP 403 unauthorized transfer access"
+        },
+        {
+          "name": "AccountApplicationServiceTest",
+          "module": "account-service",
+          "count": 7,
+          "result": "PASSED",
+          "coverage": "Account creation, event publishing, user account listing, balance check, credit update, saga debit & failure events"
+        },
+        {
+          "name": "AccountControllerTest",
+          "module": "account-service",
+          "count": 3,
+          "result": "PASSED",
+          "coverage": "POST /api/v1/accounts, GET /api/v1/accounts (list user accounts), GET /api/v1/accounts/{id}/balance"
+        },
+        {
+          "name": "LoginUseCaseTest",
+          "module": "auth-service",
+          "count": 4,
+          "result": "PASSED",
+          "coverage": "JWT RS256 token generation, invalid email, wrong password, inactive account rejection"
+        },
+        {
+          "name": "RegisterUserUseCaseTest",
+          "module": "auth-service",
+          "count": 2,
+          "result": "PASSED",
+          "coverage": "Password BCrypt hashing, duplicate email validation, event dispatching"
+        }
+      ]
+    },
+    "engineeringDecisions": [
+      {
+        "decision": "Saga Choreography vs Central Orchestrator",
+        "rationale": "An orchestrator is a single point of failure and tightly couples services. With choreography, services react independently to Kafka events. If Transaction Service temporarily restarts, Account Service still processes from its partition without data loss."
+      },
+      {
+        "decision": "Dual Concurrency Guard (Redisson Lock + JPA @Version)",
+        "rationale": "Redisson distributed lock (wait 5s, lease 10s) prevents two simultaneous transfer requests across multiple instances from passing balance verification. JPA @Version protects low-level database consistency. They address two distinct failure modes."
+      },
+      {
+        "decision": "Direct @Modifying JPQL UPDATE over JPA Entity Save",
+        "rationale": "JPA's EntityManager caches entities in its first-level persistence context. When an HTTP thread loads an account entity while a Kafka consumer thread tries to save the same entity ID concurrently, JPA throws NonUniqueObjectException. Direct UPDATE statements bypass EntityManager cache staleness entirely."
+      },
+      {
+        "decision": "JWT RS256 (Asymmetric) vs HS256 (Symmetric)",
+        "rationale": "With symmetric HS256, all microservices share the same secret key — compromising one service allows forged admin tokens. With RS256, only Auth Service holds private.pem. API Gateway and downstream services hold public.pem; they verify authenticity but can never forge tokens."
+      },
+      {
+        "decision": "REQUIRES_NEW Transaction Propagation in Consumers",
+        "rationale": "When a @Transactional method encounters an exception, Spring marks the physical transaction as rollback-only. @Transactional(propagation = Propagation.REQUIRES_NEW) guarantees an independent physical transaction so compensating refunds execute in a clean transaction boundary."
+      },
+      {
+        "decision": "Resilience4j Circuit Breaker with 4xx Client Bypass",
+        "rationale": "Feign calls from Transaction to Account Service are wrapped in Resilience4j. Business validation errors (e.g., 403 ownership mismatch, 422 insufficient funds) are explicitly treated as client validation exceptions rather than infrastructure faults, preventing circuit breakers from falsely tripping open."
+      }
+    ],
+    "kafkaTopics": [
+      {
+        "name": "fincore.user.registered",
+        "producer": "Auth Service",
+        "consumers": "Audit, Notification",
+        "trigger": "User registration complete"
+      },
+      {
+        "name": "fincore.account.created",
+        "producer": "Account Service",
+        "consumers": "Audit",
+        "trigger": "Account opened"
+      },
+      {
+        "name": "fincore.transfer.initiated",
+        "producer": "Transaction Service",
+        "consumers": "Account Service, Audit",
+        "trigger": "Transfer requested & pre-flight passed"
+      },
+      {
+        "name": "fincore.account.debited",
+        "producer": "Account Service",
+        "consumers": "Transaction Service, Audit",
+        "trigger": "Source debit successful"
+      },
+      {
+        "name": "fincore.account.debit.failed",
+        "producer": "Account Service",
+        "consumers": "Transaction Service, Audit",
+        "trigger": "Debit failed / concurrent overdraft"
+      },
+      {
+        "name": "fincore.transfer.completed",
+        "producer": "Transaction Service",
+        "consumers": "Notification, Audit",
+        "trigger": "Target account credited"
+      },
+      {
+        "name": "fincore.transfer.cancelled",
+        "producer": "Transaction Service",
+        "consumers": "Notification, Audit",
+        "trigger": "Debit or credit failed (compensation issued)"
+      }
+    ]
+  },
+  "otherProjects": [
+    {
+      "id": "truthtrace",
+      "name": "TruthTrace: AI-Powered Misinformation Detection Platform",
+      "badge": "Full-Stack Project",
+      "type": "Misinformation Analysis & OCR Pipeline",
+      "tagline": "End-to-end full-stack platform helping users assess online claims and news screenshots through a documented OCR and NLP analysis workflow with persistent history.",
+      "links": {
+        "github": "",
+        "documentation": ""
+      },
+      "techStack": [
+        {
+          "name": "Frontend",
+          "version": "React, JavaScript, HTML5, CSS3",
+          "category": "Client Layer"
+        },
+        {
+          "name": "Backend",
+          "version": "Java, Spring Boot, REST APIs",
+          "category": "Application Layer"
+        },
+        {
+          "name": "Database",
+          "version": "MySQL 8",
+          "category": "Relational Persistence"
+        },
+        {
+          "name": "OCR Engine",
+          "version": "Tesseract OCR",
+          "category": "Image Text Extraction"
+        },
+        {
+          "name": "NLP Pipeline",
+          "version": "Documented Text Credibility Classifier",
+          "category": "Machine Learning"
+        }
+      ],
+      "overview": {
+        "problem": "Online misinformation spreads rapidly across social media as both raw text posts and screenshots of fabricated news. Ordinary users lack straightforward tools to extract text from images, assess claim credibility, and inspect automated assessment rationale without misleading binary conclusions.",
+        "approach": "Engineered a layered architecture combining a React single-page frontend and a modular Spring Boot REST API. Integrated Tesseract OCR for screenshot text extraction with user verification before NLP analysis, persisting results in MySQL with explicit distinction between model confidence and objective factual truth.",
+        "outcome": "Designed an auditable verification workflow supporting text submissions and image uploads, with structured results dashboards, user history management, and automated test coverage."
+      },
+      "modules": [
+        {
+          "title": "Text Credibility Analysis",
+          "description": "Validates article text or claims, handles malformed/empty input, executes text classification, and provides credibility scores with explanatory rationale while handling ambiguous claims gracefully."
+        },
+        {
+          "title": "Image-Based OCR Pipeline",
+          "description": "Enables screenshot uploads, processes images through Tesseract OCR, presents extracted text for user review and manual correction before triggering analysis."
+        },
+        {
+          "title": "Analysis Results Dashboard",
+          "description": "Displays claim assessment, model confidence scores, extracted text, and prominent disclaimers emphasizing that predictions are automated aids rather than definitive fact-checking."
+        },
+        {
+          "title": "Analysis History & Workspace",
+          "description": "Persists records in MySQL with filtering, search, pagination, and user ownership isolation to review previous assessments."
+        },
+        {
+          "title": "Modular Spring Boot Backend",
+          "description": "Decoupled architecture across REST controllers, service layer, OCR processor, NLP adapter, and JPA repositories, allowing models to be updated without backend rewrites."
+        },
+        {
+          "title": "Security & Testing",
+          "description": "File size/type restrictions, environment-based credentials, and automated unit/integration tests covering validation, OCR edge cases, and API error handling."
+        }
+      ],
+      "engineeringNote": "OCR and NLP lexical analysis architecture with decoupled Spring Boot services and MySQL relational schema."
+    },
+    {
+      "id": "lifeledger",
+      "name": "LifeLedger: Secure Student Productivity Platform",
+      "badge": "Full-Stack Project",
+      "type": "Productivity & Academic Planning Core",
+      "tagline": "A student-centric productivity platform combining JWT-secured Spring Boot backend services with task tracking, milestone management, and habit consistency analytics.",
+      "links": {
+        "github": "",
+        "documentation": ""
+      },
+      "techStack": [
+        {
+          "name": "Backend",
+          "version": "Java 17, Spring Boot 3.2.5",
+          "category": "Application Core"
+        },
+        {
+          "name": "Database",
+          "version": "MySQL 8",
+          "category": "Relational Persistence"
+        },
+        {
+          "name": "Build Tool",
+          "version": "Maven",
+          "category": "Dependency Management"
+        },
+        {
+          "name": "Security",
+          "version": "JWT Authentication & BCrypt",
+          "category": "Auth & Token Lifecycle"
+        },
+        {
+          "name": "API Style",
+          "version": "RESTful JSON APIs",
+          "category": "Contract"
+        },
+        {
+          "name": "Frontend",
+          "version": "React, Modern CSS, Responsive Layout",
+          "category": "Client Layer"
+        }
+      ],
+      "overview": {
+        "problem": "Students manage fragmented commitments across disconnected apps for coursework, deadlines, habits, and long-term milestones, often encountering bloated tools that lack clean data modeling and reliable user data isolation.",
+        "approach": "Built a monolithic layered Spring Boot backend with clean relational MySQL modeling, user ownership validation on every endpoint, JWT-secured sessions, and dedicated domain modules for tasks, habits, and goals.",
+        "outcome": "Delivered a cohesive student workspace computing daily agendas, milestone progress, and habit streaks directly from persisted relational data without synthetic statistics."
+      },
+      "modules": [
+        {
+          "title": "Authentication & User Management",
+          "description": "User registration, BCrypt password hashing, JWT token lifecycle management, user role enforcement, and duplicate account validation."
+        },
+        {
+          "title": "Academic Task & Assignment Tracking",
+          "description": "CRUD operations with priorities, categories, due date tracking, overdue status detection, and relational user ownership constraints."
+        },
+        {
+          "title": "Goals & Milestone Engine",
+          "description": "Hierarchical goal breakdown into actionable milestones, computing real-time progress percentages strictly from completed milestone records."
+        },
+        {
+          "title": "Habit & Routine Tracker",
+          "description": "Daily completion logs, consecutive streak calculation, and weekly/monthly habit heatmaps with consistent date boundary handling."
+        },
+        {
+          "title": "Dashboard & Insights",
+          "description": "Centralized overview of today's schedule, overdue assignments, habit streaks, and goal completions derived purely from stored database records."
+        },
+        {
+          "title": "Backend Layering & Integrity",
+          "description": "Strict separation between controllers, service logic, and Spring Data JPA repositories, preventing unauthorized cross-user data leakage."
+        }
+      ],
+      "engineeringNote": "Monolithic modular Spring Boot architecture with relational MySQL domain modeling and JWT-authenticated session management."
+    }
+  ],
+  "skillsData": {
+    "backend": [
+      {
+        "name": "Java (17 & 21)",
+        "context": "Core language, records, pattern matching, concurrency"
+      },
+      {
+        "name": "Spring Boot (3.x)",
+        "context": "REST APIs, auto-configuration, multi-module setups"
+      },
+      {
+        "name": "Spring Cloud",
+        "context": "Gateway, OpenFeign, Config Server"
+      },
+      {
+        "name": "JWT RS256",
+        "context": "Asymmetric cryptography, public/private key verification"
+      },
+      {
+        "name": "Distributed Systems",
+        "context": "Saga choreography, idempotency engines, Hexagonal architecture"
+      }
+    ],
+    "messagingAndConcurrency": [
+      {
+        "name": "Apache Kafka",
+        "context": "Topic partitioning, consumer groups, event streams"
+      },
+      {
+        "name": "Redis & Redisson",
+        "context": "Distributed locks (lease/wait), rate limiting, idempotency cache"
+      },
+      {
+        "name": "Optimistic Locking",
+        "context": "JPA @Version DB concurrency protection"
+      },
+      {
+        "name": "Resilience4j",
+        "context": "Circuit breakers, fallback handlers, client error bypass"
+      }
+    ],
+    "databasesAndTools": [
+      {
+        "name": "PostgreSQL 15",
+        "context": "Relational persistence, database-per-service isolation"
+      },
+      {
+        "name": "MySQL 8",
+        "context": "Relational schema design, indexes, foreign key constraints"
+      },
+      {
+        "name": "Flyway",
+        "context": "Version-controlled database schema migrations"
+      },
+      {
+        "name": "Docker & Compose",
+        "context": "Multi-container local infrastructure orchestration"
+      },
+      {
+        "name": "Build Tools",
+        "context": "Gradle 9 (multi-module) & Maven"
+      },
+      {
+        "name": "Version Control",
+        "context": "Git, GitHub branch workflows, pull requests"
+      }
+    ],
+    "observability": [
+      {
+        "name": "Prometheus",
+        "context": "Metrics scraping, actuator endpoints"
+      },
+      {
+        "name": "Grafana",
+        "context": "Infrastructure dashboards and monitoring"
+      },
+      {
+        "name": "Zipkin",
+        "context": "Distributed request tracing across gateway and microservices"
+      },
+      {
+        "name": "Kafka UI",
+        "context": "Live partition, consumer group, and topic inspection"
+      }
+    ],
+    "frontend": [
+      {
+        "name": "React",
+        "context": "Component architecture, hooks, state management"
+      },
+      {
+        "name": "HTML5 & CSS3",
+        "context": "Semantic markup, modern CSS variables, responsive grids"
+      },
+      {
+        "name": "JavaScript (ES6+)",
+        "context": "Modern syntax, async/await, DOM APIs"
+      }
+    ]
+  },
+  "achievementsTimeline": [
+    {
+      "year": "2026",
+      "title": "GATE CSE 2026 Qualified",
+      "organization": "National Conducting Institute (GATE Committee)",
+      "category": "Competitive Examination",
+      "description": "Qualified in Computer Science and Information Technology (GATE CSE), validating fundamental mastery in algorithms, data structures, operating systems, DBMS, and computer architecture.",
+      "verificationUrl": "",
+      "documentType": "Scorecard / Qualification Certificate"
+    },
+    {
+      "year": "2026",
+      "title": "Placement Selection — TCS",
+      "organization": "Tata Consultancy Services",
+      "category": "Professional Placement",
+      "description": "Selected for the role of System Engineer through competitive engineering campus recruitment.",
+      "verificationUrl": "",
+      "documentType": "Selection Letter / Confirmation"
+    },
+    {
+      "year": "2023 – 2027",
+      "title": "B.Tech in Computer Science and Engineering",
+      "organization": "JECRC University, Jaipur",
+      "category": "Academic Degree",
+      "description": "Pursuing 4-year undergraduate curriculum with rigorous coursework in distributed computing, database management, computer networks, and software engineering.",
+      "verificationUrl": "",
+      "documentType": "Academic Transcript / ID"
+    },
+    {
+      "year": "Hackathon",
+      "title": "Adobe University Hackathon",
+      "organization": "Adobe",
+      "category": "Hackathon Participation",
+      "description": "Participated in university-wide software hackathon developing collaborative digital solutions under competitive sprint constraints.",
+      "verificationUrl": "",
+      "documentType": "Participation Certificate"
+    },
+    {
+      "year": "Hackathon",
+      "title": "National Healthcare Hackathon",
+      "organization": "National Healthcare Innovation Initiative",
+      "category": "Hackathon Participation",
+      "description": "Participated in national-level technical hackathon focusing on practical software and systems engineering for healthcare workflows.",
+      "verificationUrl": "",
+      "documentType": "Participation Certificate"
+    }
+  ],
+  "certificates": [
+    {
+      "id": "cert-gate-2026",
+      "title": "GATE CSE 2026 Qualification",
+      "issuer": "GATE Conducting Body",
+      "date": "2026",
+      "verificationUrl": "",
+      "fileUrl": "",
+      "fileName": "",
+      "published": false
+    },
+    {
+      "id": "cert-tcs-selection",
+      "title": "TCS System Engineer Offer Letter",
+      "issuer": "Tata Consultancy Services",
+      "date": "2026",
+      "verificationUrl": "",
+      "fileUrl": "/uploads/doc_1792083465877_CT20265006112_OL__1_.pdf",
+      "fileName": "CT20265006112_OL (1).pdf",
+      "published": true
+    },
+    {
+      "id": "cert-adobe-hackathon",
+      "title": "Adobe University Hackathon Participation",
+      "issuer": "Adobe",
+      "date": "Participated",
+      "verificationUrl": "",
+      "fileUrl": "/uploads/doc_1792088326852_AdobeUniversityHackathon.pdf",
+      "fileName": "Adobe_University_Hackathon_Certificate.pdf",
+      "published": true
+    },
+    {
+      "id": "cert-healthcare-hackathon",
+      "title": "National Healthcare Hackathon Participation",
+      "issuer": "JECRC University",
+      "date": "Participated",
+      "verificationUrl": "",
+      "fileUrl": "",
+      "fileName": "",
+      "published": false
+    }
+  ]
+}
