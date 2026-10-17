@@ -70,7 +70,7 @@ export default function ResumeSection() {
                 <div className="sheet-status-footer">
                   <div className="sheet-attached-badge">
                     <FileText size={15} className="text-cyan" />
-                    <span>Attached Document: Kritika_Khandelwal_Resume.pdf</span>
+                    <span>Attached Document: {resumeUrl ? resumeUrl.split('/').pop() : 'Kritika_Resume_Final.pdf'}</span>
                   </div>
                 </div>
               )}
