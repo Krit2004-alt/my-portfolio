@@ -49,8 +49,8 @@ export default function Hero() {
 
           {/* Primary Headline */}
           <h1 className="hero-headline">
-            Building Reliable Backend Systems.
-            <span className="headline-gradient"> Solving Real Problems.</span>
+            Software Development Engineer.
+            <span className="headline-gradient">Backend Architecture.</span>
           </h1>
 
           {/* Supporting Technical Bio */}
